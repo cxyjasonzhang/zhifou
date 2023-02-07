@@ -1,6 +1,5 @@
 <template>
   <GlobalHeader :user="user"></GlobalHeader>
-  <!-- <GlobalHeader :user="mainStore.user"></GlobalHeader> -->
   <router-view></router-view>
   <loader v-if="isLoading" text="拼命加载中..."  background="rgba(0, 0, 0, 0.8)"></loader>
   <GlobalFooter></GlobalFooter>
@@ -20,8 +19,6 @@ import createMessage from './components/createMessage'
 const mainStore = useMainStore()
 const { isLoading, user, token, error } = storeToRefs(mainStore)
 watch(() => error?.value?.status, () => {
-  // const status  = mainStore.error?.status
-  // const message  = mainStore.error?.message
   if(error?.value) {
     const { status, message } = error.value
     if (status && message) {
@@ -32,11 +29,7 @@ watch(() => error?.value?.status, () => {
 onMounted(() => {
   if(!user.value.isLogin && token.value) {
     axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-    mainStore.fetchCurrentUser().then(res => {
-      mainStore.user = { isLogin: true, ...res?.data.data }
-    }).catch(err => {
-      console.log(err)
-    })
+    mainStore.fetchCurrentUser()
   }
 })
 </script>

@@ -28,10 +28,8 @@
 <script lang="ts">
 import { defineComponent, reactive } from 'vue'
 import { useMainStore } from '../store'
-import { useRouter } from 'vue-router'
 import ValidateForm from '../components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
-import createMessage from '../components/createMessage'
 export default defineComponent ({
   components:{
     ValidateForm,
@@ -39,7 +37,7 @@ export default defineComponent ({
   },
   setup () {
     const mainStore = useMainStore()
-    const router = useRouter()
+    // const router = useRouter()
     // 跟用户输入的数据进行双向绑定
     const formData = reactive({
       email: '',
@@ -57,16 +55,7 @@ export default defineComponent ({
     ]
     const formSubmit = (isValid: boolean) => {
       if(isValid) {
-        mainStore.login(formData).then(res => {
-          console.log(res, '登录');
-          mainStore.user = { isLogin: true, ...res?.data.data }
-          createMessage('登录成功，两秒后跳转到首页！', 'success')
-          setTimeout(() => {
-            router.push('/')
-          }, 2000)
-        }).catch(err => [
-          console.log(err)
-        ])
+        mainStore.login(formData)
       }
     }
     return {

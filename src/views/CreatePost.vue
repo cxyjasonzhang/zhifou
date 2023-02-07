@@ -33,12 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import ValidateForm from '../components/ValidateForm.vue';
-import { useRouter } from 'vue-router';
-import  ValidateInput, { RulesProp } from '../components/ValidateInput.vue';
-import { useMainStore } from '../store'
-import { PostProps } from '../test'
-import { ref } from 'vue'
+import ValidateForm from '../components/ValidateForm.vue'
+// import { useRouter } from 'vue-router';
+import  ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
+// import { useMainStore } from '../store'
+// import { PostProps } from '../test'
+import { ref, onMounted } from 'vue'
 
 const titleRules: RulesProp = [
   {type: 'required', message: '文章标题不能为空！'}
@@ -47,8 +47,11 @@ const titleRules: RulesProp = [
 const contentRules: RulesProp = [
   {type: 'required', message: '文章详情不能为空！'}
 ]
-const mainStore = useMainStore()
-const router = useRouter()
+onMounted(() => {
+  console.log(111)
+})
+// const mainStore = useMainStore()
+// const router = useRouter()
 const titleVal = ref('')
 const contentVal = ref('')
 const onFormSubmit = (result: boolean) => {

@@ -19,16 +19,13 @@ axios.interceptors.response.use(resp => {
   // let timer: any = null
   // let timer: NodeJS.Timer | null = null
   // window.setTimeout(() => {
-    useMainStore().setLoading(false)
+  useMainStore().setLoading(false)
   // }, 2000)
   return resp
 }, e => {
-  // console.log(e.response,'err');
   const { error } = e.response.data
-  console.log(error,'err');
   useMainStore().setLoading(false)
   useMainStore().setError({ status: true, message: error })
-  // store.commit('setError', { status: true, message: error })
   return Promise.reject(error)
 })
 

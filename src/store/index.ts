@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import { GlobalDataProps, GlobalErrorProps } from './type'
 import { objToArr } from '../utils/helper'
 import { axios } from '../utils/http'
+import router from '../router'
+import createMessage from '../components/createMessage'
 // export const pinia = createPinia()
 // 1.定义并导出容器   参数1是容器的参数（必须唯一）
 
@@ -29,12 +31,6 @@ export const useMainStore = defineStore('main', {
     getColumns: (state) => {
       return objToArr(state.columns.data)
     }
-    // getColumnById: (state) => (id: number) => {
-    //   return state.columns.data.find(c => c._id === id)
-    // },
-    // getPostById: (state) => (id: number) => {
-    //   return state.posts.data.filter(p => p.columnId === id)
-    // }
   },
 
   /**
@@ -43,7 +39,7 @@ export const useMainStore = defineStore('main', {
   actions: {
     // 登录接口 --- payload为传过来的登录账号与密码
     login(payload: any) {
-      return axios('/api/user/login',{method: 'post', data: payload})
+      axios('/api/user/login',{method: 'post', data: payload})
       .then(res => {
         if(res.data.code === 0) {
           const { token } = res.data.data
@@ -53,11 +49,11 @@ export const useMainStore = defineStore('main', {
           localStorage.setItem('token', token)
           // 将token添加到请求头
           axios.defaults.headers.common.Authorization = `Bearer ${token}`
-          return this.fetchCurrentUser()
+          this.fetchCurrentUser()
         }
       })
       .catch(err => {
-        console.log(err,'loginErr')
+        console.log(err)
       })
     },
     // 注册
@@ -69,31 +65,25 @@ export const useMainStore = defineStore('main', {
     //   this.posts.push(newPost)
     // },
     // 获取用户信息
-    async fetchCurrentUser() {
-      return await axios('/api/user/current', { method: 'get' })
-      // .then(res => {
-      //   this.user = { isLogin: true, ...res.data.data }
-      //   router.push('/')
-      // })
-      // .catch(err => {
-      //   console.log(err);
-      // })
+    fetchCurrentUser() {
+      axios('/api/user/current', { method: 'get' })
+      .then(res => {
+        this.user = { isLogin: true, ...res.data.data }
+        if(router.currentRoute.value.path != '/') {
+          createMessage('登录成功，两秒后跳转到首页！', 'success')
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     // 请求首页专栏列表
     fetchColumns(params: any) {
       const { currentPage = 1, pageSize = 3 } = params
         return axios(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`,{method: 'get'})
-      // .then(res => {
-      //   // 先将原先的数据取出来
-      //   const { data } = this.columns
-      //   console.log(res.data.data.list)
-      //   const { list, count, currentPage } = res.data.data
-      //   this.columns = {
-      //     data: { ...data, ...arrToObj(list)},
-      //     total: count,
-      //     currentPage: currentPage * 1
-      //   }
-      // })
     },
     // 获取专栏内的文章
     // 设置出错提示
@@ -103,7 +93,6 @@ export const useMainStore = defineStore('main', {
     // 设置加载
     setLoading(status: boolean) {
       this.isLoading = status
-      console.log('调用了，此时loading为', status)
     }
   }
 })

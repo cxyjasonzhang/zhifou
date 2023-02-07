@@ -16,7 +16,7 @@
       <label for="nickName">昵称</label>
       <ValidateInput type="text" :rules="nickNameRules" 
         v-model="formData.nickName" id="nickName" 
-        placeholder="请输入邮箱地址"
+        placeholder="请输入昵称"
         ref="inputRef"
       ></ValidateInput>
     </div>
@@ -92,11 +92,11 @@ export default defineComponent ({
           password: formData.password
         }
         mainStore.signup(payload).then(res => {
+          console.log(res)
           createMessage('注册成功 正在跳转到登录页', 'success')
-          console.log(res,'signup')
           setTimeout(() => {
             router.push('/login')
-          }, 1000);
+          }, 1000)
         }).catch(err => {
           console.log(err)
         })
