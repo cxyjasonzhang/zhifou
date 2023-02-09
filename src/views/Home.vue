@@ -13,7 +13,7 @@
 import ColumnList from '../components/ColumnList.vue'
 import { arrToObj } from '../utils/helper'
 import useLoadMorePlus from '../hooks/useLoadMorePlus.js'
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useMainStore } from '../store'
 export default defineComponent({
   components:{
@@ -25,6 +25,9 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 3
     }
+    const total = computed(() => {
+      return mainStore.columns.total
+    })
     mainStore.fetchColumns(params)
     .then(res => {
       // 先将原先的数据取出来
@@ -38,6 +41,7 @@ export default defineComponent({
     })
     const { loadMorePage, isLastPage } = useLoadMorePlus(
       'fetchColumn',
+      total,
       {
         pageSize: 3,
         currentPage: mainStore.columns.currentPage ? mainStore.columns.currentPage + 1 : 2

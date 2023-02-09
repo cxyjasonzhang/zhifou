@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-// import { testPosts, ColumProps, PostProps } from '../test'
-import { GlobalDataProps, GlobalErrorProps } from './type'
+import { GlobalDataProps, GlobalErrorProps, PostProps } from './type'
 import { objToArr } from '../utils/helper'
 import { axios } from '../utils/http'
 import router from '../router'
@@ -30,6 +29,15 @@ export const useMainStore = defineStore('main', {
   getters: {
     getColumns: (state) => {
       return objToArr(state.columns.data)
+    },
+    getColumnById: (state) => (id: string) => {
+      return state.columns.data[id]
+    },
+    getPostByCid: (state) => (cid: string) => {
+      return objToArr(state.posts.data).filter(item => item.column === cid)
+    },
+    getLoadedPost: (state) => (id: string) => {
+      return state.posts.loadedColumns[id]
     }
   },
 
@@ -61,9 +69,13 @@ export const useMainStore = defineStore('main', {
       return axios('/api/users', { method: 'post', data: payload })
     },
     // 创建文章
-    // createPost(newPost: PostProps) {
-    //   this.posts.push(newPost)
-    // },
+    createPost(payload: PostProps) {
+      return axios('/api/posts', {method: 'post', data: payload})
+    },
+    // 根据id获取专栏信息
+    fetchColumn(cid: any) {
+      return axios(`/api/columns/${cid}`, { method: 'get' })
+    },
     // 获取用户信息
     fetchCurrentUser() {
       axios('/api/user/current', { method: 'get' })
@@ -82,10 +94,16 @@ export const useMainStore = defineStore('main', {
     },
     // 请求首页专栏列表
     fetchColumns(params: any) {
+      console.log(params,'ppp')
       const { currentPage = 1, pageSize = 3 } = params
         return axios(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`,{method: 'get'})
     },
-    // 获取专栏内的文章
+    // 获取特定用户的专栏文章列表
+    fetchColumnsPosts(params: any) {
+      const { page, size, columnId } = params
+      return axios(`/api/columns/${columnId}/posts?currentPage=${page}&pageSize=${size}`)
+
+    },
     // 设置出错提示
     setError(e: GlobalErrorProps) {
       this.error = e

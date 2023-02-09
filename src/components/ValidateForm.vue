@@ -49,7 +49,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .form-container {
   max-width: 680px;
-  margin: 100px auto;
+  margin: 30px auto;
 }
 .title {
   text-align: center;

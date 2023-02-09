@@ -71,7 +71,7 @@ export interface GlobalDataProps {
     currentPage: number;
     total: number;
   };
-  posts?: {
+  posts: {
     data: ListProps<PostProps>;
     loadedColumns: ListProps<LoadedPostProps>;
   };

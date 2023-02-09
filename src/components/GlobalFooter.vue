@@ -19,8 +19,5 @@ export default {
 <style lang="scss" scoped>
 .footer {
   width: 100%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
 }
 </style>

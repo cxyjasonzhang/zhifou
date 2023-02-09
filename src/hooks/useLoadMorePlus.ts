@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, ComputedRef } from 'vue'
 import { useMainStore } from '../store'
 import { arrToObj } from '../utils/helper';
 
@@ -8,7 +8,7 @@ export interface LoadParams {
   pageSize: number;
 }
 
-const useLoadMore = (actionName: string, params: LoadParams = { currentPage: 1, pageSize: 5 } ) => {
+const useLoadMore = (actionName: string, total:ComputedRef<number>, params: LoadParams = { currentPage: 1, pageSize: 5 } ) => {
   const mainStore = useMainStore()
   const { currentPage: current, pageSize, columnId} = params
   const currentPage = ref(current)
@@ -20,6 +20,7 @@ const useLoadMore = (actionName: string, params: LoadParams = { currentPage: 1, 
 
   const loadMorePage = () => {
     if(actionName === 'fetchColumn') {
+      console.log(requestParams.value,'requestParams')
       mainStore.fetchColumns(requestParams.value)
       .then(res => {
         currentPage.value++
@@ -33,6 +34,20 @@ const useLoadMore = (actionName: string, params: LoadParams = { currentPage: 1, 
           currentPage: currentPage.value
         }  
       })
+    } else if(actionName === 'fetchColumnsPosts') {
+      mainStore.fetchColumnsPosts(requestParams.value).then(res => {
+        currentPage.value++
+        const { data } = mainStore.posts
+        const { list, count } = res.data.data
+        mainStore.posts.data = {...data, ...list}
+        mainStore.posts.loadedColumns[columnId as string] = {
+          columnId: columnId,
+          total: count,
+          currentPage: currentPage.value
+        }
+      }).catch(err => {
+        console.log(err)
+      })
     }
   }
 
@@ -40,7 +55,7 @@ const useLoadMore = (actionName: string, params: LoadParams = { currentPage: 1, 
     if(actionName === 'fetchColumn') {
       return Math.ceil(mainStore.columns.total / pageSize) < currentPage.value
     } else {
-      return false
+      return Math.ceil(total.value / pageSize) < currentPage.value
     }
   })
 
