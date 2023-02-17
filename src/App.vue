@@ -1,6 +1,8 @@
 <template>
   <GlobalHeader :user="user"></GlobalHeader>
-  <router-view></router-view>
+  <div class="body">
+    <router-view></router-view>
+  </div>
   <loader v-if="isLoading" text="拼命加载中..."  background="rgba(0, 0, 0, 0.8)"></loader>
   <GlobalFooter></GlobalFooter>
 </template>
@@ -36,13 +38,8 @@ onMounted(() => {
 
 <style scoped>
 
-.form-group {
-  width: 350px;
-  text-align: left;
-}
-.header {
-  position: absolute;
-  top: 0;
-  left: 0;
+.body {
+  height: 71vh;
+  margin-top: 124px;
 }
 </style>

@@ -13,7 +13,7 @@
           </div>
           <div class="card-body" style="text-align: center;">
             <h5 class="card-title">{{item.title}}</h5>
-            <p class="card-text">{{item.description}}</p>
+            <p class="card-text card-text-style">{{item.description}}</p>
             <!-- <router-link :to="{name:'column',params:{id:item.id}}" class="btn btn-outline-primary">进入专栏</router-link> -->
             <!-- <router-link :to="`/column/${item._id}`" class="btn btn-outline-primary">进入专栏</router-link> -->
             <router-link :to="`/column/${item._id}`">
@@ -66,4 +66,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.card-text-style {
+  height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 </style>
