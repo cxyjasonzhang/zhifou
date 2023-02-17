@@ -26,6 +26,7 @@ interface CheckCondition {
 }
 type ErrorType = 'size' | 'format' | null
 
+// 图片上传前的检查
 export function beforeUploadCheck (file: File, condition: CheckCondition) {
   const { format, size } = condition
   const isValidFormat = format ? format.includes(file.type) : true

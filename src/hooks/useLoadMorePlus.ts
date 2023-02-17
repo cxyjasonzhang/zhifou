@@ -1,6 +1,6 @@
 import { ref, computed, ComputedRef } from 'vue'
 import { useMainStore } from '../store'
-import { arrToObj } from '../utils/helper';
+import { arrToObj, objToArr } from '../utils/helper';
 
 export interface LoadParams {
   columnId?: string;
@@ -8,7 +8,7 @@ export interface LoadParams {
   pageSize: number;
 }
 
-const useLoadMore = (actionName: string, total:ComputedRef<number>, params: LoadParams = { currentPage: 1, pageSize: 5 } ) => {
+const useLoadMore = (actionName: string, total: ComputedRef<number>, params: LoadParams = { currentPage: 1, pageSize: 5 } ) => {
   const mainStore = useMainStore()
   const { currentPage: current, pageSize, columnId} = params
   const currentPage = ref(current)
@@ -32,14 +32,16 @@ const useLoadMore = (actionName: string, total:ComputedRef<number>, params: Load
           data: { ...data, ...arrToObj(list)},
           total: count,
           currentPage: currentPage.value
-        }  
+        }
+        console.log(mainStore.columns,'column')
       })
     } else if(actionName === 'fetchColumnsPosts') {
       mainStore.fetchColumnsPosts(requestParams.value).then(res => {
         currentPage.value++
         const { data } = mainStore.posts
         const { list, count } = res.data.data
-        mainStore.posts.data = {...data, ...list}
+        mainStore.posts.data = {...data, ...arrToObj(list)}
+        console.log(mainStore.posts.data,'column')
         mainStore.posts.loadedColumns[columnId as string] = {
           columnId: columnId,
           total: count,

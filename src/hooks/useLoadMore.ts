@@ -9,7 +9,6 @@ export interface LoadParams {
 }
 
 const useLoadMore = (params: LoadParams = { currentPage: 1, pageSize: 5 }) => {
-  // console.log(total,'totalss')
   const mainStore = useMainStore()
   const { currentPage: current, pageSize, columnId } = params 
   const currentPage = ref(current)
@@ -21,8 +20,6 @@ const useLoadMore = (params: LoadParams = { currentPage: 1, pageSize: 5 }) => {
   const loadMorePage = () => {
     mainStore.fetchColumns(requestParams.value).then((res) => {
       currentPage.value++
-      // mainStore.columns.currentPage++
-      // 先将原先的数据取出来
       const { data } = mainStore.columns
       const { list, count } = res.data.data
       mainStore.columns = {

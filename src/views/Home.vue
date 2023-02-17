@@ -38,6 +38,7 @@ export default defineComponent({
         total: count,
         currentPage: currentPage * 1
       }
+      console.log(mainStore.columns.data,'为何要先进行转换')
     })
     const { loadMorePage, isLastPage } = useLoadMorePlus(
       'fetchColumn',

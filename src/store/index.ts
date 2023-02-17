@@ -27,9 +27,11 @@ export const useMainStore = defineStore('main', {
    * 类似于组件中的computed   用于封装计算属性 有缓存的功能
    */
   getters: {
+    // 将对象转为数组 然后返回
     getColumns: (state) => {
       return objToArr(state.columns.data)
     },
+    // 之前将请求的专栏数组转为对象再存到column,key值为id值 方便取
     getColumnById: (state) => (id: string) => {
       return state.columns.data[id]
     },
@@ -100,8 +102,8 @@ export const useMainStore = defineStore('main', {
     },
     // 获取特定用户的专栏文章列表
     fetchColumnsPosts(params: any) {
-      const { page, size, columnId } = params
-      return axios(`/api/columns/${columnId}/posts?currentPage=${page}&pageSize=${size}`)
+      const { currentPage = 1, pageSize = 3, columnId } = params
+      return axios(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`)
 
     },
     // 设置出错提示

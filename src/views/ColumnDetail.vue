@@ -24,6 +24,7 @@ import { useRoute } from 'vue-router'
 import PostList from '../components/PostList.vue'
 import { addColumnAvatar } from '../utils/helper'
 import useLoadMore from '../hooks/useLoadMorePlus'
+import { arrToObj } from '../utils/helper'
 type ColumnIdProp = string | undefined
 export default defineComponent({
   components:{
@@ -43,19 +44,18 @@ export default defineComponent({
       currentPage: loaded.currentPage ? loaded.currentPage + 1 : 1,
       pageSize: 3,
       columnId
-    }
+    } 
     watch(mainStore.posts.loadedColumns, () => {
       const { currentPage, total } = mainStore.getLoadedPost(columnId as string)
       loaded.currentPage = currentPage as number
       loaded.total = total as number
     })
     onMounted(() => {
-      mainStore.fetchColumnsPosts(params).then(res => {
-        console.log(res, '***')
+      mainStore.fetchColumnsPosts({ columnId: columnId, pageSize: 3 }).then(res => {
         const {columnId } = params
         const { data } = mainStore.posts
         const { list, count, currentPage } = res.data.data
-        mainStore.posts.data = {...data, ...list}
+        mainStore.posts.data = {...data, ...arrToObj(list)}
         mainStore.posts.loadedColumns[columnId as any] = {
           columnId: columnId,
           total: count,
