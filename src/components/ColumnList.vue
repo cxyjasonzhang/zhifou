@@ -30,14 +30,6 @@
 import defaultImg from '../assets/image/defaultImg.png'
 import { defineComponent, PropType, computed } from 'vue';
 import { ColumnProps } from '../store/type'
-// import { storeToRefs } from 'pinia';
-// import { ImageProps } from '../test';
-// export interface ColumnProps {
-//   _id: number;
-//   title: string;
-//   avatar?: ImageProps;
-//   description: string
-// }
 export default defineComponent({
   name:"ColumnList",
   props: {

@@ -33,6 +33,11 @@ const router = createRouter({
       component: () => import('./views/CreatePost.vue'),
       meta: { requiredLogin: true}
     },
+    {
+      path: '/post/:postId',
+      name: 'post',
+      component: () => import('./views/PostDetail.vue')
+    },
   ]
 })
 // 路由守卫

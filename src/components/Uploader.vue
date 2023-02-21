@@ -18,7 +18,7 @@ export default {
 
 <script setup lang="ts">
 import axios from 'axios'
-import { ref, PropType } from 'vue'
+import { ref, PropType, watch } from 'vue'
 type UpLoadStatus = 'ready' | 'loading' | 'success' | 'fail'
 type CheckFunction = (file: File) => boolean
 const props = defineProps({
@@ -34,6 +34,7 @@ const props = defineProps({
     type: Object
   }
 })
+
 const emit = defineEmits(['file-uploaded-success','file-uploaded-error'])
 const fileInput = ref<null | HTMLInputElement>(null)   // 定义ref的泛型
 const fileStatus = ref<UpLoadStatus>('ready')
@@ -43,7 +44,14 @@ const triggerUpload = () => {
     fileInput.value.click()
   }
 }
-const uploadedData = ref()
+const uploadedData = ref(props.uploaded)
+// 关于watch监听不是响应式对象的编写方式
+watch(() => props.uploaded, (newValue) => {
+  if(newValue) {
+    fileStatus.value = 'success'
+    uploadedData.value = newValue
+  }
+})
 const handleFileChange = (e: Event) => {
   const currentTarget = e.target as HTMLInputElement
   if(currentTarget.files) {
@@ -52,7 +60,6 @@ const handleFileChange = (e: Event) => {
       return false
     }
     fileStatus.value = 'loading'
-    console.log(currentTarget.files,'***') 
     // currentTarget.files这边的currentTarget.files不是一个数组，是一个伪数组，这边使用该方法将其转化为数组
     const formData = new FormData()
     formData.append('file', files[0])

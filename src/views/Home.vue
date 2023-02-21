@@ -41,7 +41,7 @@ export default defineComponent({
       console.log(mainStore.columns.data,'为何要先进行转换')
     })
     const { loadMorePage, isLastPage } = useLoadMorePlus(
-      'fetchColumn',
+      'fetchColumns',
       total,
       {
         pageSize: 3,

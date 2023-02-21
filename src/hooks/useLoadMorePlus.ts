@@ -1,6 +1,6 @@
 import { ref, computed, ComputedRef } from 'vue'
 import { useMainStore } from '../store'
-import { arrToObj, objToArr } from '../utils/helper';
+import { arrToObj } from '../utils/helper';
 
 export interface LoadParams {
   columnId?: string;
@@ -19,7 +19,7 @@ const useLoadMore = (actionName: string, total: ComputedRef<number>, params: Loa
   }))
 
   const loadMorePage = () => {
-    if(actionName === 'fetchColumn') {
+    if(actionName === 'fetchColumns') {
       console.log(requestParams.value,'requestParams')
       mainStore.fetchColumns(requestParams.value)
       .then(res => {

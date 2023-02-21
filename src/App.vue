@@ -1,8 +1,6 @@
 <template>
   <GlobalHeader :user="user"></GlobalHeader>
-  <div class="body">
-    <router-view></router-view>
-  </div>
+  <router-view></router-view>
   <loader v-if="isLoading" text="拼命加载中..."  background="rgba(0, 0, 0, 0.8)"></loader>
   <GlobalFooter></GlobalFooter>
 </template>
@@ -17,8 +15,11 @@ import Loader from './components/Loader.vue'
 import { onMounted, watch } from 'vue';
 import { useMainStore } from './store';
 import { axios }  from './utils/http';
+import { useRoute, useRouter } from 'vue-router'
 import createMessage from './components/createMessage'
 const mainStore = useMainStore()
+const router = useRouter()
+const route = useRoute()
 const { isLoading, user, token, error } = storeToRefs(mainStore)
 watch(() => error?.value?.status, () => {
   if(error?.value) {
@@ -31,7 +32,12 @@ watch(() => error?.value?.status, () => {
 onMounted(() => {
   if(!user.value.isLogin && token.value) {
     axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
-    mainStore.fetchCurrentUser()
+    mainStore.fetchCurrentUser().then(res => {
+    mainStore.user = { isLogin: true, ...res.data.data }
+  })
+  .catch(err => {
+    console.log(err);
+  })
   }
 })
 </script>

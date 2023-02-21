@@ -40,6 +40,9 @@ export const useMainStore = defineStore('main', {
     },
     getLoadedPost: (state) => (id: string) => {
       return state.posts.loadedColumns[id]
+    },
+    getCurrentPost: (state) => (postId: string) => {
+      return state.posts.data[postId] 
     }
   },
 
@@ -59,7 +62,16 @@ export const useMainStore = defineStore('main', {
           localStorage.setItem('token', token)
           // 将token添加到请求头
           axios.defaults.headers.common.Authorization = `Bearer ${token}`
-          this.fetchCurrentUser()
+          this.fetchCurrentUser().then(res => {
+            this.user = { isLogin: true, ...res.data.data }
+            createMessage('登录成功，两秒后跳转到首页！', 'success')
+            setTimeout(() => {
+              router.push('/')
+            }, 2000)
+          })
+          .catch(err => {
+            console.log(err);
+          })
         }
       })
       .catch(err => {
@@ -72,27 +84,28 @@ export const useMainStore = defineStore('main', {
     },
     // 创建文章
     createPost(payload: PostProps) {
-      return axios('/api/posts', {method: 'post', data: payload})
+      return axios('/api/posts', { method: 'post', data: payload })
+    },
+    // 更新指定id的文章
+    updatePostByPid(pid: string, payload: any) {
+      return axios(`/api/posts/${pid}`, { method: 'patch', data: payload })
+    },
+    // 删除指定id的文章
+    deletePostByPid(pid: string) {
+      delete this.posts.data[pid]  // 先删除本地的数据，再发请求去删除数据库中的数据
+      return axios(`/api/posts/${pid}`, { method: 'delete'})
     },
     // 根据id获取专栏信息
     fetchColumn(cid: any) {
-      return axios(`/api/columns/${cid}`, { method: 'get' })
+      axios(`/api/columns/${cid}`, { method: 'get' }).then(res => {
+        console.log(res.data)
+        const { data } = res.data
+        this.columns.data[data._id] = data
+      })
     },
     // 获取用户信息
     fetchCurrentUser() {
-      axios('/api/user/current', { method: 'get' })
-      .then(res => {
-        this.user = { isLogin: true, ...res.data.data }
-        if(router.currentRoute.value.path != '/') {
-          createMessage('登录成功，两秒后跳转到首页！', 'success')
-          setTimeout(() => {
-            router.push('/')
-          }, 2000)
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      return axios('/api/user/current', { method: 'get' })
     },
     // 请求首页专栏列表
     fetchColumns(params: any) {
@@ -104,6 +117,16 @@ export const useMainStore = defineStore('main', {
     fetchColumnsPosts(params: any) {
       const { currentPage = 1, pageSize = 3, columnId } = params
       return axios(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`)
+
+    },
+    // 获取对应id的文章
+    fetchPostById(postId: string) {
+      const currentPost = this.posts.data[postId]
+      if(!currentPost || !currentPost.content) {
+        return axios(`/api/posts/${postId}`, { method: 'get' })
+      } else {
+        return Promise.resolve({ data: currentPost })
+      }
 
     },
     // 设置出错提示

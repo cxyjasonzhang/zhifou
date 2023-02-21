@@ -1,11 +1,12 @@
 <!-- 创建文章 -->
 <template>
   <div class="create-post-page container-form">
-    <h3>新建文章</h3>
+    <h3>{{  isEditArticle ? '修改文章' : '新建文章' }}</h3>
     <Uploader
       action="/api/upload"
       class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
       :beforeUpdate="beforeUpload"
+      :uploaded="uploadedData"
       @file-uploaded-success="onFileUploadSuccess"
     >
       <template #uploaded="uploadedProps">
@@ -49,7 +50,7 @@
         ></ValidateInput>
       </div>
       <template #submit>
-        <button class="btn btn-primary btn-larger">发表文章</button>
+        <button class="btn btn-primary btn-larger">{{ isEditArticle ? '更新文章' : '发表文章' }}</button>
       </template>
     </ValidateForm>
   </div>
@@ -61,20 +62,37 @@ import  ValidateInput, { RulesProp } from '../components/ValidateInput.vue'
 import Uploader from '@/components/Uploader.vue'
 import { beforeUploadCheck } from '../utils/helper'
 import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import createMessage from '../components/createMessage'
-import { ResponseType, ImageProps, PostProps} from '../store/type'
+import { ResponseType, ImageProps, PostProps } from '../store/type'
 import { useMainStore } from '../store'
-import { useRouter } from 'vue-router'
-let imageId = ''
 const titleRules: RulesProp = [
   {type: 'required', message: '文章标题不能为空！'}
 ]
 const contentRules: RulesProp = [
   {type: 'required', message: '文章详情不能为空！'}
 ]
-onMounted(() => {
-  console.log(111)
+const route = useRoute()
+const mainStore = useMainStore()
+const router = useRouter()
+const titleVal = ref('')
+const contentVal = ref('')
+const uploadedData = ref()
+let imageId = ''
+const postId = route.query.id
+const isEditArticle = !!postId // 两个非将其转成布尔值
+onMounted(async() => {
+  if(postId) {
+    const currentPost = await mainStore.fetchPostById(postId as string)
+    const { title, image, content } = currentPost.data
+    titleVal.value = title
+    contentVal.value = content || ''
+    if(image) {
+      uploadedData.value = { data: image }
+    }
+  }
 })
+
 const beforeUpload = (file: File) => {
   const result = beforeUploadCheck(file, {format: ['image/jpeg', 'image/png'], size: 1})
   const { passed, error } = result
@@ -92,29 +110,42 @@ const onFileUploadSuccess = (rawData: ResponseType<ImageProps>) => {
     imageId = rawData.data._id
   }
 }
-const mainStore = useMainStore()
-const router = useRouter()
-const titleVal = ref('')
-const contentVal = ref('')
 // result ==> 表单验证通过返回true
 const onFormSubmit = (result: boolean) => {
   console.log(result)
   const { column, _id } = mainStore.user
   if(result) {
-    const postData: PostProps = {
-      title: titleVal.value,
-      content: contentVal.value,
-      image: imageId,
-      column: column as string, // 将column视为一个字符串，不然会报错
-      author: _id
+    if(!isEditArticle) {
+      const postData: PostProps = {
+        title: titleVal.value,
+        content: contentVal.value,
+        image: imageId,
+        column: column as string, // 将column视为一个字符串，不然会报错
+        author: _id
+      }
+      mainStore.createPost(postData).then(res => {
+        createMessage('发表成功,2秒后跳转到文章！','success', 2000)
+        setTimeout(() => {
+          router.push({name: 'column', params: {id: column}})
+        },2000)
+      })
+    } else {
+      const postData = {
+        title: titleVal.value,
+        content: contentVal.value,
+        image: imageId
+      }
+      mainStore.updatePostByPid(postId as string, postData).then(res => {
+        console.log(res)
+        const { data } = res.data
+        mainStore.posts.data[data._id] = data  // 请求返回新文章的数据 替换掉原来的数据
+        createMessage('更新成功,2秒后跳转到文章！','success', 2000)
+        setTimeout(() => {
+          router.push({name: 'column', params: {id: column}})
+        },2000)
+      })
     }
-    mainStore.createPost(postData).then(res => {
-      console.log(res)
-      createMessage('发表成功,2秒后跳转到文章！','success', 2000)
-      setTimeout(() => {
-        router.push({name: 'column', params: {id: column}})
-      },200)
-    })
+
   }
 }
 </script>

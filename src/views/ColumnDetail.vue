@@ -51,6 +51,7 @@ export default defineComponent({
       loaded.total = total as number
     })
     onMounted(() => {
+      mainStore.fetchColumn(columnId)
       mainStore.fetchColumnsPosts({ columnId: columnId, pageSize: 3 }).then(res => {
         const {columnId } = params
         const { data } = mainStore.posts
@@ -64,7 +65,6 @@ export default defineComponent({
       }).catch(err => {
         console.log(111,err)
       })
-      mainStore.fetchColumn(columnId)
     })
     // 计算属性的使用
     const column = computed(() => {
@@ -74,6 +74,8 @@ export default defineComponent({
       }
       return currentColumn
     })
+    console.log(column,'column')
+    
     // 使用computed 当数据发生改变时 重新计算数据(没加计算属性实现不了响应式)
     const list = computed(() => {
       return mainStore.getPostByCid(columnId as string)
