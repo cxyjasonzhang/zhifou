@@ -3,8 +3,8 @@
   <div class="post-container" v-if="currentPost">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">首页</a></li>
-        <li class="breadcrumb-item"><a :href="`/column/${currentPost.column}`">专栏列表</a></li>
+        <li class="breadcrumb-item"><router-link to="/">首页</router-link></li>
+        <li class="breadcrumb-item"><router-link :to="`/column/${currentPost.column}`">专栏列表</router-link></li>
         <li class="breadcrumb-item active" aria-current="page">{{ currentPost.title }}</li>
       </ol>
     </nav>

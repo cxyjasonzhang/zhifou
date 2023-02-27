@@ -20,7 +20,6 @@ const useLoadMore = (actionName: string, total: ComputedRef<number>, params: Loa
 
   const loadMorePage = () => {
     if(actionName === 'fetchColumns') {
-      console.log(requestParams.value,'requestParams')
       mainStore.fetchColumns(requestParams.value)
       .then(res => {
         currentPage.value++
@@ -31,31 +30,32 @@ const useLoadMore = (actionName: string, total: ComputedRef<number>, params: Loa
         mainStore.columns = {
           data: { ...data, ...arrToObj(list)},
           total: count,
-          currentPage: currentPage.value
+          currentPage: currentPage.value,
+          isLoaded: true
         }
-        console.log(mainStore.columns,'column')
       })
     } else if(actionName === 'fetchColumnsPosts') {
-      mainStore.fetchColumnsPosts(requestParams.value).then(res => {
-        currentPage.value++
-        const { data } = mainStore.posts
-        const { list, count } = res.data.data
-        mainStore.posts.data = {...data, ...arrToObj(list)}
-        console.log(mainStore.posts.data,'column')
-        mainStore.posts.loadedColumns[columnId as string] = {
-          columnId: columnId,
-          total: count,
-          currentPage: currentPage.value
-        }
-      }).catch(err => {
-        console.log(err)
-      })
+        mainStore.fetchColumnsPosts(requestParams.value)
+        .then(res => {
+          currentPage.value++
+          const { data } = mainStore.posts
+          const { list, count } = res.data.data
+          mainStore.posts.data = {...data, ...arrToObj(list)}
+          mainStore.posts.loadedColumns[columnId as string] = {
+            columnId: columnId,
+            total: count,
+            currentPage: currentPage.value
+          }
+        }).catch(err => {
+          console.log(err)
+        })
     }
   }
 
   const isLastPage = computed(() => {
-    if(actionName === 'fetchColumn') {
-      return Math.ceil(mainStore.columns.total / pageSize) < currentPage.value
+    console.log(total.value, pageSize, currentPage.value, 'total')
+    if(actionName === 'fetchColumns') {
+      return Math.ceil(total.value / pageSize) < currentPage.value
     } else {
       return Math.ceil(total.value / pageSize) < currentPage.value
     }

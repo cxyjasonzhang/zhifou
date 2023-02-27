@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { GlobalDataProps, GlobalErrorProps, PostProps } from './type'
-import { objToArr } from '../utils/helper'
+import { GlobalDataProps, GlobalErrorProps, PostProps, UserProps } from './type'
+import { objToArr, arrToObj } from '../utils/helper'
 import { axios } from '../utils/http'
 import router from '../router'
 import createMessage from '../components/createMessage'
@@ -16,7 +16,7 @@ export const useMainStore = defineStore('main', {
     return {
       error: { status: false },
       token: localStorage.getItem('token') || '',
-      columns: { data: {}, currentPage: 0, total: 0 },
+      columns: { data: {}, isLoaded: false, currentPage: 0, total: 0 },
       posts: { data: {}, loadedColumns: {} },
       isLoading: false,
       user: { isLogin: false }
@@ -78,6 +78,11 @@ export const useMainStore = defineStore('main', {
         console.log(err)
       })
     },
+    // 退出接口
+    logout() {
+      this.user.isLogin = false
+      this.token = ''
+    },
     // 注册
     signup(payload: any) {
       return axios('/api/users', { method: 'post', data: payload })
@@ -97,11 +102,13 @@ export const useMainStore = defineStore('main', {
     },
     // 根据id获取专栏信息
     fetchColumn(cid: any) {
-      axios(`/api/columns/${cid}`, { method: 'get' }).then(res => {
-        console.log(res.data)
-        const { data } = res.data
-        this.columns.data[data._id] = data
-      })
+      // 如果本地已经有该数据就不再重新发请求  拦截该请求
+      if(this.columns.data[cid]) return 
+      return axios(`/api/columns/${cid}`, { method: 'get' })
+      // .then(res => {
+      //   const { data } = res.data
+      //   this.columns.data[data._id] = data
+      // })
     },
     // 获取用户信息
     fetchCurrentUser() {
@@ -109,15 +116,14 @@ export const useMainStore = defineStore('main', {
     },
     // 请求首页专栏列表
     fetchColumns(params: any) {
-      console.log(params,'ppp')
+      // if(this.columns.isLoaded) return
       const { currentPage = 1, pageSize = 3 } = params
-        return axios(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`,{method: 'get'})
+      return axios(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`,{method: 'get'})
     },
     // 获取特定用户的专栏文章列表
     fetchColumnsPosts(params: any) {
       const { currentPage = 1, pageSize = 3, columnId } = params
-      return axios(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`)
-
+        return axios(`/api/columns/${columnId}/posts?currentPage=${currentPage}&pageSize=${pageSize}`, { method: 'get' })  
     },
     // 获取对应id的文章
     fetchPostById(postId: string) {
@@ -127,7 +133,16 @@ export const useMainStore = defineStore('main', {
       } else {
         return Promise.resolve({ data: currentPost })
       }
-
+    },
+    // 修改用户资料
+    changeUserData(payload: any) {
+      const { _id } = payload
+      return axios(`/api/user/${_id}`,{ method: 'patch', data: payload })
+    },
+    // 修改用户的专栏信息
+    changeColumnData(payload: any) {
+      const { column } = this.user
+      return axios(`/api/columns/${column}`,{ method: 'patch', data: payload })
     },
     // 设置出错提示
     setError(e: GlobalErrorProps) {

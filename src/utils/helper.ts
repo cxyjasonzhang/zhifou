@@ -50,8 +50,8 @@ export function beforeUploadCheck (file: File, condition: CheckCondition) {
 //   _id: string;
 //   name: string;
 // }
-
-export const arrToObj = <T extends {_id?: string}>(arr: Array<T>) => {
+//  <T extends {_id?: string}>  约束泛型      Array<T> 指定数组泛型   {} as { [key: string]: T }  类型断言
+export const arrToObj = <T extends {_id?: string}>(arr: Array<T>) => { 
   return arr.reduce((prev, current) => {
     if (current._id) {
       prev[current._id] = current

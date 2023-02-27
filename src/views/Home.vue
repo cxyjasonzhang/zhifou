@@ -28,18 +28,21 @@ export default defineComponent({
     const total = computed(() => {
       return mainStore.columns.total
     })
-    mainStore.fetchColumns(params)
-    .then(res => {
-      // 先将原先的数据取出来
-      const { data } = mainStore.columns
-      const { list, count, currentPage } = res.data.data
-      mainStore.columns = {
-        data: { ...data, ...arrToObj(list)},
-        total: count,
-        currentPage: currentPage * 1
-      }
-      console.log(mainStore.columns.data,'为何要先进行转换')
-    })
+    // 请求后将isLoaded 置为 true
+    if(mainStore.columns.currentPage < params.currentPage) {
+      mainStore.fetchColumns(params)
+      .then(res => {
+        // 先将原先的数据取出来
+        const { data } = mainStore.columns
+        const { list, count, currentPage } = res.data.data
+        mainStore.columns = {
+          data: { ...data, ...arrToObj(list)},
+          total: count,
+          isLoaded: true,
+          currentPage: currentPage * 1
+        }
+      })
+    }
     const { loadMorePage, isLastPage } = useLoadMorePlus(
       'fetchColumns',
       total,

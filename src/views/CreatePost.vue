@@ -112,7 +112,6 @@ const onFileUploadSuccess = (rawData: ResponseType<ImageProps>) => {
 }
 // result ==> 表单验证通过返回true
 const onFormSubmit = (result: boolean) => {
-  console.log(result)
   const { column, _id } = mainStore.user
   if(result) {
     if(!isEditArticle) {

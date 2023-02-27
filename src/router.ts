@@ -38,6 +38,12 @@ const router = createRouter({
       name: 'post',
       component: () => import('./views/PostDetail.vue')
     },
+    {
+      path: '/edit',
+      name: 'edit',
+      component: () => import('./views/EditUserData.vue'),
+      // meta: { requiredLogin: true}
+    },
   ]
 })
 // 路由守卫

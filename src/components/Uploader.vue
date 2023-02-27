@@ -18,6 +18,7 @@ export default {
 
 <script setup lang="ts">
 import axios from 'axios'
+import { generateFitUrl } from '../utils/helper';
 import { ref, PropType, watch } from 'vue'
 type UpLoadStatus = 'ready' | 'loading' | 'success' | 'fail'
 type CheckFunction = (file: File) => boolean
@@ -39,7 +40,6 @@ const emit = defineEmits(['file-uploaded-success','file-uploaded-error'])
 const fileInput = ref<null | HTMLInputElement>(null)   // 定义ref的泛型
 const fileStatus = ref<UpLoadStatus>('ready')
 const triggerUpload = () => {
-  console.log(fileInput)
   if(fileInput.value) {
     fileInput.value.click()
   }
@@ -50,6 +50,8 @@ watch(() => props.uploaded, (newValue) => {
   if(newValue) {
     fileStatus.value = 'success'
     uploadedData.value = newValue
+    console.log(uploadedData.value,'**');
+    
   }
 })
 const handleFileChange = (e: Event) => {
@@ -68,7 +70,7 @@ const handleFileChange = (e: Event) => {
         "Content-Type": 'multipart/form-data'
       }
     }).then(resp => {
-      console.log(resp)
+      console.log(resp.data,'resp.data')
       uploadedData.value = resp.data
       fileStatus.value = 'success'
       emit('file-uploaded-success', resp.data)
@@ -84,4 +86,7 @@ const handleFileChange = (e: Event) => {
 </script>
 
 <style scoped>
+.file-upload-height {
+  height: 200px;
+}
 </style>

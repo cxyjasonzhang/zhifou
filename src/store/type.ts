@@ -70,10 +70,24 @@ export interface GlobalDataProps {
     data: ListProps<ColumnProps>;
     currentPage: number;
     total: number;
+    isLoaded: boolean
   };
   posts: {
     data: ListProps<PostProps>;
     loadedColumns: ListProps<LoadedPostProps>;
   };
   user: UserProps;
+}
+
+export interface ChangeUserDataPayloadProps {
+  _id?: string;
+  nickName?: string;
+  description?: string;
+  avatar?: string;
+}
+
+export interface ChangeColumnDataPayloadProps {
+  title?: string;
+  description?: string;
+  avatar?: string;
 }
