@@ -50,8 +50,6 @@ watch(() => props.uploaded, (newValue) => {
   if(newValue) {
     fileStatus.value = 'success'
     uploadedData.value = newValue
-    console.log(uploadedData.value,'**');
-    
   }
 })
 const handleFileChange = (e: Event) => {

@@ -97,7 +97,7 @@ const beforeUpload = (file: File) => {
   const result = beforeUploadCheck(file, {format: ['image/jpeg', 'image/png'], size: 1})
   const { passed, error } = result
   if(error === 'format') {
-    createMessage('图片格式必须为jpg或png类型！', 'error')
+    createMessage('图片格式必须为jpg或png类型!', 'error')
   } 
   if(error === 'size') {
     createMessage('图片大小不能超过1Mb!', 'error')

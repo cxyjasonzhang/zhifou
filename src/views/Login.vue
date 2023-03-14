@@ -1,28 +1,30 @@
 <template>
-  <ValidateForm @form-submit="formSubmit">
-    <template #title>
-      <h3 class="mb-5 title">登录到知乎</h3>
-    </template>
-    <div class="form-group mb-4">
-      <label for="email">邮箱地址</label>
-      <ValidateInput type="text" :rules="emailRules" 
-      v-model="formData.email" id="email" 
-      placeholder="请输入邮箱地址"
-      ref="inputRef"
-    ></ValidateInput>
-    </div>
-    <div class="form-group mb-4">
-      <label for="password">密码</label>
-      <ValidateInput type="password" :rules="passwordRules"
-      v-model="formData.password" 
-      placeholder="请输入密码"
-      id="password"
-    ></ValidateInput>
-    </div>
-    <template #submit>
-      <button type="submit" class="btn btn-primary mt-2 w-100">登录</button>
-    </template>
-  </ValidateForm>
+  <div class="login">
+    <ValidateForm @form-submit="formSubmit">
+      <template #title>
+        <h3 class="mb-5 title">登录到知乎</h3>
+      </template>
+      <div class="form-group mb-4">
+        <label for="email">邮箱地址</label>
+        <ValidateInput type="text" :rules="emailRules" 
+        v-model="formData.email" id="email" 
+        placeholder="请输入邮箱地址"
+        ref="inputRef"
+      ></ValidateInput>
+      </div>
+      <div class="form-group mb-4">
+        <label for="password">密码</label>
+        <ValidateInput type="password" :rules="passwordRules"
+        v-model="formData.password" 
+        placeholder="请输入密码"
+        id="password"
+      ></ValidateInput>
+      </div>
+      <template #submit>
+        <button type="submit" class="btn btn-primary mt-2 w-100">登录</button>
+      </template>
+    </ValidateForm>
+  </div>
 </template>
 
 <script lang="ts">
@@ -69,5 +71,7 @@ export default defineComponent ({
 </script>
 
 <style lang="scss" scoped>
-
+.login {
+  min-height: 81vh;
+}
 </style>

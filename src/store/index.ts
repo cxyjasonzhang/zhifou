@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { GlobalDataProps, GlobalErrorProps, PostProps, UserProps } from './type'
-import { objToArr, arrToObj } from '../utils/helper'
+import { GlobalDataProps, GlobalErrorProps, PostProps } from './type'
+import { objToArr } from '../utils/helper'
 import { axios } from '../utils/http'
 import router from '../router'
 import createMessage from '../components/createMessage'
